@@ -1,0 +1,85 @@
+name: Bug report
+description: Report something that isn't working.
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      content: |
+        Thanks for filing a bug. Please fill out the sections below so we
+        can reproduce and fix it.
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where did this happen?
+      options:
+        - Local (`pnpm dev` + `supabase start`)
+        - Preview deployment (Vercel)
+        - Production
+        - I'm not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Template version
+      description: The version you started from. `git log -1` or check `package.json#version`.
+      placeholder: "0.2.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Plain-language summary of the failure.
+      placeholder: |
+        When I click "Switch workspace" in /settings, the page reloads but
+        the dashboard still shows notes from the previous workspace.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps. If you can't reproduce it, say so.
+      placeholder: |
+        1. Run `pnpm dev`
+        2. Open http://acme.tuapp.local:3000/login
+        3. Sign in with magic link
+        4. Go to /settings
+        5. Click "Switch" on the sales workspace
+        6. Observe — dashboard still shows marketing notes
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: The sales workspace should become active and its notes should appear.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / errors
+      description: Paste relevant terminal output, browser console, or server logs.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Browser, OS, branch name, anything that might be relevant.
+    validations:
+      required: false

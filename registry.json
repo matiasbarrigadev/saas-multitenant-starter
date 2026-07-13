@@ -1,0 +1,302 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "multitenant-template",
+  "homepage": "https://github.com/your-org/multitenant-template",
+  "description": "A production-grade Next.js + Supabase multitenant starter (Company ↔ Workspace). Installable pieces: AGENTS.md, llms.txt, supabase migrations, lib helpers, route conventions, recipes.",
+  "author": "Multitenant Template Authors",
+  "license": "MIT",
+  "items": [
+    {
+      "name": "agents-instructions",
+      "type": "registry:file",
+      "title": "AGENTS.md — Universal agent rules",
+      "description": "Vendor-neutral rules for any AI coding agent (Claude Code, Cursor, Windsurf, Copilot, open-source). Reading order for agents, conventions, antipatterns, mandatory pre-commit checklist.",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "type": "registry:file",
+          "target": "~/AGENTS.md"
+        }
+      ]
+    },
+    {
+      "name": "llms-txt",
+      "type": "registry:file",
+      "title": "llms.txt — LLM-discoverable repo map",
+      "description": "llmstxt.org-spec repository navigation map. Optional companion `llms-ctx.txt` excludes the Optional section for tight context budgets.",
+      "files": [
+        {
+          "path": "llms.txt",
+          "type": "registry:file",
+          "target": "~/llms.txt"
+        }
+      ]
+    },
+    {
+      "name": "conventions",
+      "type": "registry:file",
+      "title": "docs/CONVENTIONS.md — Naming, layout, antipatterns",
+      "description": "Prose version of AGENTS.md, with worked examples. Pair them: AGENTS.md for agents, CONVENTIONS.md for humans.",
+      "files": [
+        {
+          "path": "docs/CONVENTIONS.md",
+          "type": "registry:file",
+          "target": "~/docs/CONVENTIONS.md"
+        }
+      ]
+    },
+    {
+      "name": "recipes",
+      "type": "registry:file",
+      "title": "docs/RECIPES.md — Canonical copy-pasteable recipes",
+      "description": "Six recipes: tenant-scoped table, typed route handler, tenant-scoped page, admin operation, auth flow, env var. Use as templates — do not invent your own structure.",
+      "files": [
+        {
+          "path": "docs/RECIPES.md",
+          "type": "registry:file",
+          "target": "~/docs/RECIPES.md"
+        }
+      ]
+    },
+    {
+      "name": "supabase-migrations",
+      "type": "registry:block",
+      "title": "All Supabase migrations (0001–0005)",
+      "description": "companies, workspaces, profiles, memberships + RLS + custom_access_token_hook + helper functions + notes example. Drop into supabase/migrations/ of a Next.js + Supabase project.",
+      "files": [
+        {
+          "path": "supabase/migrations/0001_init_tenants.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0001_init_tenants.sql"
+        },
+        {
+          "path": "supabase/migrations/0002_rls_policies.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0002_rls_policies.sql"
+        },
+        {
+          "path": "supabase/migrations/0003_auth_hook.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0003_auth_hook.sql"
+        },
+        {
+          "path": "supabase/migrations/0004_helper_functions.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0004_helper_functions.sql"
+        },
+        {
+          "path": "supabase/migrations/0005_notes_example.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0005_notes_example.sql"
+        }
+      ]
+    },
+    {
+      "name": "supabase-config",
+      "type": "registry:file",
+      "title": "supabase/config.toml — Local Supabase configuration",
+      "description": "Pre-configured port (54321), auth redirects for *.tuapp.local, inbucket for magic-link email capture.",
+      "files": [
+        {
+          "path": "supabase/config.toml",
+          "type": "registry:file",
+          "target": "~/supabase/config.toml"
+        }
+      ]
+    },
+    {
+      "name": "supabase-seed",
+      "type": "registry:file",
+      "title": "supabase/seed.sql — Demo company + workspaces",
+      "description": "1 company (acme) + 2 workspaces (marketing, sales) + a demo membership that activates once a user exists.",
+      "files": [
+        {
+          "path": "supabase/seed.sql",
+          "type": "registry:file",
+          "target": "~/supabase/seed.sql"
+        }
+      ]
+    },
+    {
+      "name": "lib-env",
+      "type": "registry:file",
+      "title": "lib/env.ts — Zod-validated env (fail-fast)",
+      "description": "Validated environment loader that crashes the process with a clear message if any var is missing or malformed.",
+      "files": [
+        {
+          "path": "lib/env.ts",
+          "type": "registry:file",
+          "target": "~/lib/env.ts"
+        }
+      ]
+    },
+    {
+      "name": "lib-supabase-clients",
+      "type": "registry:block",
+      "title": "Supabase clients (server, browser, service)",
+      "description": "Three carefully-scoped clients. Server: RLS-respecting. Browser: for Client Components. Service: RLS-bypassing for admin operations only. Plus typed Database shape.",
+      "files": [
+        {
+          "path": "lib/supabase/server.ts",
+          "type": "registry:file",
+          "target": "~/lib/supabase/server.ts"
+        },
+        {
+          "path": "lib/supabase/browser.ts",
+          "type": "registry:file",
+          "target": "~/lib/supabase/browser.ts"
+        },
+        {
+          "path": "lib/supabase/service.ts",
+          "type": "registry:file",
+          "target": "~/lib/supabase/service.ts"
+        },
+        {
+          "path": "lib/supabase/types.ts",
+          "type": "registry:file",
+          "target": "~/lib/supabase/types.ts"
+        }
+      ]
+    },
+    {
+      "name": "lib-tenant-resolution",
+      "type": "registry:block",
+      "title": "Tenant resolution (host → company, path → workspace)",
+      "description": "Parsing helpers, RLS-aware DB lookups with TTL cache, and the ActiveContext type that any server-side code can read.",
+      "files": [
+        {
+          "path": "lib/tenant/host.ts",
+          "type": "registry:file",
+          "target": "~/lib/tenant/host.ts"
+        },
+        {
+          "path": "lib/tenant/resolve-company.ts",
+          "type": "registry:file",
+          "target": "~/lib/tenant/resolve-company.ts"
+        },
+        {
+          "path": "lib/tenant/resolve-workspace.ts",
+          "type": "registry:file",
+          "target": "~/lib/tenant/resolve-workspace.ts"
+        },
+        {
+          "path": "lib/tenant/context.ts",
+          "type": "registry:file",
+          "target": "~/lib/tenant/context.ts"
+        }
+      ]
+    },
+    {
+      "name": "lib-api-helpers",
+      "type": "registry:block",
+      "title": "API response helpers + handler wrapper",
+      "description": "`ok`/`warn`/`err` builders, `withApi()` wrapper that enforces no-store cache headers and maps errors uniformly. Catalog of ApiErrorCode values.",
+      "files": [
+        {
+          "path": "lib/api/response.ts",
+          "type": "registry:file",
+          "target": "~/lib/api/response.ts"
+        },
+        {
+          "path": "lib/api/handler.ts",
+          "type": "registry:file",
+          "target": "~/lib/api/handler.ts"
+        },
+        {
+          "path": "lib/api/errors.ts",
+          "type": "registry:file",
+          "target": "~/lib/api/errors.ts"
+        }
+      ]
+    },
+    {
+      "name": "proxy-tenant-resolution",
+      "type": "registry:file",
+      "title": "proxy.ts — Tenant resolution + auth refresh",
+      "description": "The single source of truth for resolving the tenant on each request. Validates the JWT, refreshes if needed, applies no-store headers, forwards x-company-id / x-workspace-id / x-user-id to downstream code.",
+      "files": [
+        {
+          "path": "proxy.ts",
+          "type": "registry:file",
+          "target": "~/proxy.ts"
+        }
+      ]
+    },
+    {
+      "name": "app-tenant-skeleton",
+      "type": "registry:block",
+      "title": "Protected tenant layout + dashboard + settings + API routes",
+      "description": "Demonstrates how Server Components, Client Components, Server Actions, and Route Handlers live together in the tenant-scoped area. Includes workspace switcher + magic-link sign-out.",
+      "files": [
+        {
+          "path": "app/(tenant)/layout.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/layout.tsx"
+        },
+        {
+          "path": "app/(tenant)/dashboard/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/dashboard/page.tsx"
+        },
+        {
+          "path": "app/(tenant)/settings/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/settings/page.tsx"
+        },
+        {
+          "path": "app/(tenant)/settings/Switcher.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/settings/Switcher.tsx"
+        },
+        {
+          "path": "app/(tenant)/settings/actions.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/settings/actions.ts"
+        },
+        {
+          "path": "app/(tenant)/api/me/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/me/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/me/switch-workspace/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/me/switch-workspace/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/notes/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/notes/route.ts"
+        }
+      ]
+    },
+    {
+      "name": "app-auth-skeleton",
+      "type": "registry:block",
+      "title": "Magic-link auth flow (login + callback + request endpoint)",
+      "description": "Magic-link sign-in page, the request endpoint that sends the email, and the callback that exchanges the code for a session and redirects to the user's first workspace.",
+      "files": [
+        {
+          "path": "app/auth/callback/route.ts",
+          "type": "registry:file",
+          "target": "~/app/auth/callback/route.ts"
+        },
+        {
+          "path": "app/api/auth/request-link/route.ts",
+          "type": "registry:file",
+          "target": "~/app/api/auth/request-link/route.ts"
+        },
+        {
+          "path": "app/(auth)/login/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(auth)/login/page.tsx"
+        },
+        {
+          "path": "app/(auth)/login/LoginForm.tsx",
+          "type": "registry:file",
+          "target": "~/app/(auth)/login/LoginForm.tsx"
+        }
+      ]
+    }
+  ]
+}

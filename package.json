@@ -1,0 +1,72 @@
+{
+  "name": "multitenant-template",
+  "version": "0.2.0",
+  "private": false,
+  "description": "Multitenant SaaS starter template: Vercel + Supabase + Next.js 15 (App Router). Two-level tenancy: Company → Workspace.",
+  "author": "Multitenant Template Authors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/multitenant-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/multitenant-template/issues"
+  },
+  "homepage": "https://github.com/your-org/multitenant-template#readme",
+  "keywords": [
+    "nextjs",
+    "supabase",
+    "multitenant",
+    "saas",
+    "starter",
+    "template",
+    "rls",
+    "row-level-security",
+    "magic-link",
+    "agent",
+    "ai"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:status": "supabase status",
+    "supabase:types": "supabase gen types typescript --local > lib/supabase/types.gen.ts",
+    "setup:supabase": "tsx scripts/setup-supabase.ts",
+    "setup:supabase:check": "tsx scripts/setup-supabase.ts --check-only",
+    "setup:supabase:apply": "tsx scripts/setup-supabase.ts --apply --yes",
+    "vercel:link": "tsx scripts/vercel-cli.ts link",
+    "vercel:env:pull": "tsx scripts/vercel-cli.ts env pull",
+    "vercel:env:list": "tsx scripts/vercel-cli.ts env list",
+    "vercel:domains:list": "tsx scripts/vercel-cli.ts domains list",
+    "vercel:deploy": "tsx scripts/vercel-cli.ts deploy",
+    "vercel:deployments": "tsx scripts/vercel-cli.ts deployments list"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.46.1",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.14.0",
+    "eslint-config-next": "^15.0.0",
+    "supabase": "^1.215.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3",
+    "vercel": "^37.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

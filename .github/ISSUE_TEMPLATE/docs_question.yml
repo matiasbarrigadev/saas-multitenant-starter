@@ -1,0 +1,31 @@
+name: Docs / how-to question
+description: You read the docs and got stuck. Ask here.
+title: "[docs] "
+labels: ["documentation", "question"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      content: |
+        Docs questions are great. Before you file:
+        - Search closed issues for similar questions.
+        - Check `llms.txt` and `AGENTS.md` first.
+        - If the answer turns out to be a docs gap, we'll fix it.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What's the question?
+      placeholder: |
+        How do I add Stripe billing that's scoped to a workspace, not a company?
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What did you try?
+      description: Docs you read, files you looked at, experiments you ran.
+    validations:
+      required: true

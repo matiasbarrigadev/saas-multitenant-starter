@@ -1,0 +1,195 @@
+# =============================================================================
+# deploy.yml — Single CI/CD workflow for the multitenant template.
+#
+# Why one workflow (not two): the template ships as a single repo, not a
+# monorepo, so there is no shared CI to keep "DRY" between CI and CD. A
+# single workflow is easier to read and modify. Split into ci.yml +
+# deploy.yml if your fork grows to a monorepo.
+#
+# Triggers:
+#   - push to main           -> CI + deploy to production
+#   - pull_request to main   -> CI only (preview URL printed in PR)
+#   - workflow_dispatch      -> manual deploy, with input for which env
+#
+# Why CLI instead of vercel-deploy-action or GitHub App:
+#   - The Vercel GitHub App deploys for free on Hobby, but gives the
+#     agent no programmatic control over deploys, env, or domains.
+#   - This workflow uses the Vercel CLI so the same credentials and
+#     commands work both locally and in CI. See scripts/vercel-cli.ts.
+#
+# Required GitHub repository secrets (Settings -> Secrets and variables
+# -> Actions -> Repository secrets):
+#   VERCEL_TOKEN          Personal Access Token (vercel.com/account/tokens)
+#   VERCEL_ORG_ID         Optional for personal deploys; required for teams.
+#   VERCEL_PROJECT_ID     Optional; recommended for unambiguous targeting.
+# Plus, the same Supabase / app env vars your Vercel project needs:
+#   NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+#   SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_ROOT_DOMAIN,
+#   NEXT_PUBLIC_APP_SCHEME
+# =============================================================================
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to deploy"
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+
+concurrency:
+  # Cancel in-progress runs on the same branch when a new commit lands.
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+# Default permissions to the minimum the workflow needs.
+permissions:
+  contents: read
+  pull-requests: write   # only used to comment preview URLs on PRs
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. CI: typecheck + build. Runs on every PR and push. Fast-fail before
+  #    any deploy attempt.
+  # ---------------------------------------------------------------------------
+  ci:
+    name: CI (typecheck + build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        # Build with placeholder env so the Next.js build doesn't fail on
+        # missing runtime values. We don't deploy from this job.
+        run: |
+          cat > .env.local <<EOF
+          NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=ci-placeholder-anon-key-not-real
+          SUPABASE_SERVICE_ROLE_KEY=ci-placeholder-service-key-not-real
+          NEXT_PUBLIC_ROOT_DOMAIN=ci.example.com
+          NEXT_PUBLIC_APP_SCHEME=https
+          EOF
+          pnpm build
+
+  # ---------------------------------------------------------------------------
+  # 2. Deploy. Only runs after CI passes. Push to main -> production.
+  #    PRs and manual dispatch with target=preview -> preview URL.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Skip on PRs if you don't want preview deploys. The default here
+    # runs preview deploys on PRs because they're free on Hobby and very
+    # useful for review. Set to `if: github.event_name != 'pull_request'`
+    # to disable.
+    if: github.event_name != 'pull_request' || true
+    environment:
+      # The name of the GitHub Environment controls required reviewers
+      # and secrets scoping. Create these in Settings -> Environments.
+      name: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies (including vercel CLI)
+        run: pnpm install --frozen-lockfile
+
+      - name: Pull Vercel environment configuration
+        # Sync env vars from Vercel -> local file, so the CLI uses the
+        # project's actual env. Safer than re-listing all vars here.
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set."
+            exit 1
+          fi
+          # `vercel env pull` writes .env.local from the project's stored env.
+          # First, link the project locally so vercel CLI knows what to pull.
+          if [ -n "$VERCEL_PROJECT_ID" ] && [ -n "$VERCEL_ORG_ID" ]; then
+            vercel link --yes --token "$VERCEL_TOKEN" \
+              --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+          else
+            vercel link --yes --token "$VERCEL_TOKEN"
+          fi
+          vercel env pull .env.ci.local --environment="${{ github.event_name == 'push' && 'production' || 'preview' }}" --token "$VERCEL_TOKEN"
+
+      - name: Deploy to Vercel
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        # `--prebuilt` would skip Vercel's build; we want Vercel to build
+        # so it can use its own cache + edge network.
+        # For preview deploys on PRs: `vercel` (no flag) gives a unique URL.
+        # For production: `vercel deploy --prod`.
+        # `vercel deploy --yes` skips the "are you sure?" prompt.
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] || \
+             [ "${{ github.event.inputs.target }}" = "production" ]; then
+            DEPLOY_URL=$(vercel deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1 | tee /tmp/deploy.log | tail -n 1)
+          else
+            DEPLOY_URL=$(vercel deploy --yes --token "$VERCEL_TOKEN" 2>&1 | tee /tmp/deploy.log | tail -n 1)
+          fi
+          echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request' && steps.deploy.outputs.deploy_url != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: deploy-preview
+          message: |
+            ✅ Preview deployed to ${{ steps.deploy.outputs.deploy_url }}
+
+            Inspect: `vercel inspect <deployment-url>` or open the URL.
+
+      - name: Fail loudly if deploy URL is empty
+        if: steps.deploy.outputs.deploy_url == ''
+        run: |
+          echo "::error::vercel deploy produced no URL. See /tmp/deploy.log above."
+          cat /tmp/deploy.log
+          exit 1

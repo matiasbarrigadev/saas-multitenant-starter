@@ -1,0 +1,58 @@
+# Multitenant Template
+
+> A production-grade Next.js + Supabase + Vercel starter for SaaS with
+> two-level tenancy (Company ↔ Workspace). Designed so AI agents can extend
+> it predictably and so a human can ship a new project in a day, not a week.
+
+This repository ships a working auth flow, RLS-based tenant isolation, a
+tenant-resolution proxy, and uniform API responses. The intended audience
+is two-fold: humans who want a fast starting point, and AI coding agents
+who need a structured set of rules so they extend the codebase instead of
+improvising against it.
+
+Start here, then dive into the specific docs you need.
+
+## Docs
+
+- [README.md](README.md): Human quickstart — install, env, run, deploy.
+- [AGENTS.md](AGENTS.md): Universal, vendor-neutral rules for any AI agent.
+- [CONTRIBUTING.md](CONTRIBUTING.md): How to file issues / submit PRs.
+- [docs/CONVENTIONS.md](docs/CONVENTIONS.md): Naming, file layout, antipatterns.
+- [docs/RECIPES.md](docs/RECIPES.md): Canonical, copy-pasteable examples.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): Design decisions and trade-offs.
+- [docs/AUTH.md](docs/AUTH.md): Magic-link flow, session lifecycle.
+- [docs/RLS.md](docs/RLS.md): How to add a new tenant-scoped table.
+- [docs/TENANCY.md](docs/TENANCY.md): When to use Company vs Workspace.
+- [docs/DEPLOY.md](docs/DEPLOY.md): Vercel + DNS + wildcard SSL.
+- [docs/ENV.md](docs/ENV.md): Every env var explained.
+
+## Architecture files (high signal)
+
+- [proxy.ts](proxy.ts): Tenant resolution + auth refresh + cache headers.
+- [lib/env.ts](lib/env.ts): Zod-validated env (fail-fast).
+- [lib/supabase/server.ts](lib/supabase/server.ts): RLS-respecting server client.
+- [lib/supabase/service.ts](lib/supabase/service.ts): RLS-bypassing admin client.
+- [lib/tenant/context.ts](lib/tenant/context.ts): Active tenant context for the request.
+- [lib/tenant/host.ts](lib/tenant/host.ts): Host header → company slug.
+- [lib/api/handler.ts](lib/api/handler.ts): `withApi()` wrapper for Route Handlers.
+- [lib/api/response.ts](lib/api/response.ts): `ok` / `warn` / `err` shape.
+- [lib/api/errors.ts](lib/api/errors.ts): Catalog of API error codes.
+- [scripts/setup-supabase.ts](scripts/setup-supabase.ts): Orchestrate remote Supabase setup (link, push, hook, auth, seed).
+- [scripts/vercel-cli.ts](scripts/vercel-cli.ts): Orchestrate Vercel project (link, env, domains, deploy, deployments, inspect).
+- [.github/workflows/deploy.yml](.github/workflows/deploy.yml): CI/CD — typecheck, build, deploy on push to main.
+- [supabase/migrations/0003_auth_hook.sql](supabase/migrations/0003_auth_hook.sql): `custom_access_token_hook`.
+
+## Agent-facing recipes
+
+- [skills/add-table.md](skills/add-table.md): Add a tenant-scoped table with RLS.
+- [skills/add-api-route.md](skills/add-api-route.md): Add a typed Route Handler.
+- [skills/add-auth-flow.md](skills/add-auth-flow.md): Add a new auth provider.
+- [skills/add-admin-action.md](skills/add-admin-action.md): Add an admin operation using the service client.
+- [skills/setup-supabase.md](skills/setup-supabase.md): Add a new phase to the setup script.
+- [skills/vercel-cli.md](skills/vercel-cli.md): Add a subcommand to the Vercel CLI wrapper.
+- [skills/deploy-ci.md](skills/deploy-ci.md): Add a job or modify the deploy workflow.
+
+## Distribution
+
+- [registry.json](registry.json): shadcn registry entries — installable via `pnpm dlx shadcn add <owner>/<repo>/<item>`.
+- [components.json](components.json): Project aliases config consumed by the shadcn CLI.

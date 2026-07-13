@@ -1,0 +1,56 @@
+name: Feature request
+description: Propose a new feature, table, route, or convention for the template.
+title: "[feat] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      content: |
+        Feature requests that align with the template's purpose (a
+        vendored-neutral, agent-friendly Next.js + Supabase + Vercel
+        starter) are most likely to be accepted. Please describe the
+        use case first, then the proposed solution.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of change
+      options:
+        - New SQL migration / RLS pattern
+        - New API helper or convention
+        - New agent skill
+        - New docs file
+        - New infra (Vercel, Supabase config)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What scenario does this unblock? Be specific about who is affected.
+      placeholder: |
+        Anyone using the template for a B2B SaaS where billing is per-workspace,
+        not per-company. Right now there's no docs/RECIPE for adding Stripe
+        per-workspace billing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How would you structure the change? Reference files / patterns.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you've considered and why this one wins.
+    validations:
+      required: false
