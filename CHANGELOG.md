@@ -3,6 +3,8 @@
 > Machine-readable version history. AI agents can parse this file to
 > understand what changed between versions and write upgrade scripts.
 
+<!-- trigger deploy workflow for first-time CI registration -->
+
 This file follows [Keep a Changelog](https://keepachangelog.com/) format
 with the additional convention that each entry includes:
 
