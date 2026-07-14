@@ -59,7 +59,8 @@ export default async function TenantLayout({
   // Re-verify the company actually exists (defense in depth: proxy.ts
   // validated membership, but if the company was deleted while the user
   // had a session, we want to fail gracefully here).
-  const host = parseHost(headers().get("host"));
+  const hdrs = await headers();
+  const host = parseHost(hdrs.get("host"));
   if (host.companySlug) {
     const company = await resolveCompanyBySlug(host.companySlug);
     if (!company) {

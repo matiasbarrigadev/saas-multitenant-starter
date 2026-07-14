@@ -31,10 +31,16 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import { env } from "@/lib/env";
 import { parseHost, buildAbsoluteUrl } from "@/lib/tenant/host";
+
+/**
+ * Shape of each entry passed to `setAll` by @supabase/ssr. Pinning it
+ * here keeps the callback strongly-typed.
+ */
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 /**
  * Routes that are accessible WITHOUT auth. Anything else requires a valid
@@ -150,7 +156,7 @@ export async function proxy(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           // Write to BOTH the incoming request (so the rest of this
           // function sees refreshed cookies) and the outgoing response
           // (so the browser persists them).
