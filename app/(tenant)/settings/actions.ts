@@ -20,7 +20,8 @@ export async function signOut() {
   await supabase.auth.signOut();
 
   // Redirect to /login on the same subdomain.
-  const host = parseHost(headers().get("host"));
+  const hdrs = await headers();
+  const host = parseHost(hdrs.get("host"));
   const hostName = host.companySlug
     ? `${host.companySlug}.${env.NEXT_PUBLIC_ROOT_DOMAIN}`
     : env.NEXT_PUBLIC_ROOT_DOMAIN;

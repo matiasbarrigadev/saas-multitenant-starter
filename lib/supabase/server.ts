@@ -20,9 +20,17 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 import { env } from "@/lib/env";
+
+/**
+ * Shape of each entry passed to `setAll` by @supabase/ssr. The library
+ * uses this callback to write refreshed auth cookies back to the
+ * response. Pinning the shape here keeps `setAll(cookiesToSet)`
+ * strongly-typed regardless of @supabase/ssr version changes.
+ */
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 /**
  * Create a Supabase client scoped to the current request.
@@ -46,7 +54,7 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
             for (const { name, value, options } of cookiesToSet) {
               cookieStore.set(name, value, options);
