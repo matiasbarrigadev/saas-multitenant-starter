@@ -78,6 +78,30 @@ export interface Note {
   updated_at: string;
 }
 
+/** Platform-level role. Lives in app_metadata.platform_role, stamped
+ * by the custom_access_token_hook (0008_hook_platform_role.sql). */
+export type PlatformRole = "super_admin";
+
+export interface AuditEvent {
+  id: string;
+  actor_user_id: string | null;
+  company_id: string | null;
+  workspace_id: string | null;
+  event_type: string;
+  payload: Json;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+export interface WorkspaceModuleGrant {
+  id: string;
+  workspace_id: string;
+  module_key: string;
+  granted_by: string | null;
+  granted_at: string;
+}
+
 /**
  * Database interface consumed by the Supabase typed client.
  *
@@ -130,6 +154,22 @@ export interface Database {
         };
         Update: Partial<Note>;
       };
+      audit_events: {
+        Row: AuditEvent;
+        Insert: Omit<AuditEvent, "id" | "created_at"> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<AuditEvent>;
+      };
+      workspace_module_grants: {
+        Row: WorkspaceModuleGrant;
+        Insert: Omit<WorkspaceModuleGrant, "id" | "granted_at"> & {
+          id?: string;
+          granted_at?: string;
+        };
+        Update: Partial<WorkspaceModuleGrant>;
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -151,6 +191,22 @@ export interface Database {
       };
       user_can_access_workspace: {
         Args: { workspace_id: string };
+        Returns: boolean;
+      };
+      current_platform_role: {
+        Args: Record<string, never>;
+        Returns: string | null;
+      };
+      is_super_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      is_company_owner: {
+        Args: { target_company_id: string };
+        Returns: boolean;
+      };
+      is_company_admin: {
+        Args: { target_company_id: string };
         Returns: boolean;
       };
     };

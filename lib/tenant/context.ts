@@ -21,6 +21,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
+import type { PlatformRole } from "@/lib/supabase/types";
 
 import { parseHost } from "@/lib/tenant/host";
 import { headers } from "next/headers";
@@ -51,6 +52,14 @@ export interface ActiveContext {
   company: { id: string; slug: string };
   workspace: { id: string; slug: string };
   role: "owner" | "admin" | "member";
+  /**
+   * Platform-level role. Read from app_metadata.platform_role, stamped
+   * by the custom_access_token_hook (0008_hook_platform_role.sql).
+   * `null` for normal users; `'super_admin'` for the SaaS vendor's
+   * platform operators. A super_admin can see / administer every
+   * company in the database regardless of memberships.
+   */
+  platformRole: PlatformRole | null;
   /** All workspaces the user is a member of, useful for the switcher UI. */
   memberships: Array<{
     company_id: string;
@@ -141,6 +150,11 @@ export async function getActiveContext(): Promise<ActiveContext> {
 
   // Build the company slug from the active membership (more reliable than
   // re-parsing the host, which may be apex in some contexts).
+  //
+  // platformRole is read from app_metadata. It's null for normal users and
+  // 'super_admin' for the SaaS vendor's platform operators.
+  const platformRole = (appMetadata.platform_role as PlatformRole | null) ?? null;
+
   return {
     user: {
       id: claims.sub,
@@ -155,6 +169,7 @@ export async function getActiveContext(): Promise<ActiveContext> {
       slug: activeMembership.workspace_slug,
     },
     role: activeRole,
+    platformRole,
     memberships,
   };
 }
