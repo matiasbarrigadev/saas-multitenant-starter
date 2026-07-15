@@ -87,6 +87,9 @@ trick search engines.
 - ✅ **Uniform API responses** (`ok`/`warn`/`err`) with typed error codes
 - ✅ **Cache-Control: no-store** baked in — no cross-tenant leaks on CDN
 - ✅ **Workspace switcher** with live JWT refresh
+- ✅ **3-tier RBAC**: super_admin / owner / team_member, with platform-level
+      admin panel at `/admin` and company-level at `/w/<slug>/admin`. Includes
+      audit log + service-role guards.
 - ✅ **Zod-validated env vars** — fails fast on bad config
 - ✅ **Agent-first packaging** — `AGENTS.md`, `llms.txt`, `skills/`, shadcn
       registry entries. See [§ Using with AI agents](#using-with-ai-agents).
@@ -391,13 +394,19 @@ AI agents read `skills/vercel-cli.md` to extend the script, and
 - [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — naming, layout, antipatterns (for agents AND humans).
 - [docs/RECIPES.md](docs/RECIPES.md) — copy-pasteable canonical extensions.
 - [docs/RISKS.md](docs/RISKS.md) — known risks, mitigations, service_role audit.
+- [docs/RBAC.md](docs/RBAC.md) — permission matrix (super_admin / owner / admin / member) and promotion flow.
+- [docs/ADMIN.md](docs/ADMIN.md) — UI tour of the admin panel.
 
 ## Skills (agent-facing)
 
 - [skills/add-table.md](skills/add-table.md) — add a tenant-scoped table.
 - [skills/add-api-route.md](skills/add-api-route.md) — add a typed Route Handler.
 - [skills/add-auth-flow.md](skills/add-auth-flow.md) — add a new auth provider.
-- [skills/add-admin-action.md](skills/add-admin-action.md) — add a service-role admin action.
+- [skills/add-admin-action.md](skills/add-admin-action.md) — add a company-admin action.
+- [skills/add-super-admin-action.md](skills/add-super-admin-action.md) — add a super_admin-only action.
+- [skills/add-audit-event.md](skills/add-audit-event.md) — emit an audit event from any route.
+- [skills/add-workspace.md](skills/add-workspace.md) — workspace create / archive.
+- [skills/add-member.md](skills/add-member.md) — member invite / role-change / remove.
 
 ## Repo layout
 
