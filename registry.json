@@ -297,6 +297,201 @@
           "target": "~/app/(auth)/login/LoginForm.tsx"
         }
       ]
+    },
+    {
+      "name": "supabase-migrations-admin",
+      "type": "registry:block",
+      "title": "Admin migrations (0006, 0007, 0008)",
+      "description": "Adds audit_events + workspace_module_grants tables, 4 RBAC helper functions (is_super_admin, is_company_owner, is_company_admin, current_platform_role), RLS policies for the new tables, and an update to custom_access_token_hook to stamp platform_role into JWTs.",
+      "files": [
+        {
+          "path": "supabase/migrations/0006_admin_panel.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0006_admin_panel.sql"
+        },
+        {
+          "path": "supabase/migrations/0007_rls_admin.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0007_rls_admin.sql"
+        },
+        {
+          "path": "supabase/migrations/0008_hook_platform_role.sql",
+          "type": "registry:file",
+          "target": "~/supabase/migrations/0008_hook_platform_role.sql"
+        }
+      ]
+    },
+    {
+      "name": "lib-admin-guards",
+      "type": "registry:block",
+      "title": "lib/admin — guards + audit helpers",
+      "description": "Authorization guards (requireSuperAdmin, requireCompanyAdmin, requireCompanyOwner) and audit helpers (recordAuditEvent, extractRequestMeta) for admin endpoints. All admin mutations use these.",
+      "files": [
+        {
+          "path": "lib/admin/guards.ts",
+          "type": "registry:file",
+          "target": "~/lib/admin/guards.ts"
+        },
+        {
+          "path": "lib/admin/audit.ts",
+          "type": "registry:file",
+          "target": "~/lib/admin/audit.ts"
+        }
+      ]
+    },
+    {
+      "name": "app-admin-super",
+      "type": "registry:block",
+      "title": "Platform admin (super_admin) pages + APIs",
+      "description": "All files under app/admin/: the layout, the companies list and detail pages, the audit log viewer, and the 3 API routes (suspend company, promote/demote user, list audit events). Visible only to super_admin.",
+      "files": [
+        {
+          "path": "app/admin/layout.tsx",
+          "type": "registry:file",
+          "target": "~/app/admin/layout.tsx"
+        },
+        {
+          "path": "app/admin/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/admin/page.tsx"
+        },
+        {
+          "path": "app/admin/audit/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/admin/audit/page.tsx"
+        },
+        {
+          "path": "app/admin/companies/[id]/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/admin/companies/[id]/page.tsx"
+        },
+        {
+          "path": "app/admin/api/audit/route.ts",
+          "type": "registry:file",
+          "target": "~/app/admin/api/audit/route.ts"
+        },
+        {
+          "path": "app/admin/api/companies/[id]/suspend/route.ts",
+          "type": "registry:file",
+          "target": "~/app/admin/api/companies/[id]/suspend/route.ts"
+        },
+        {
+          "path": "app/admin/api/users/[id]/promote/route.ts",
+          "type": "registry:file",
+          "target": "~/app/admin/api/users/[id]/promote/route.ts"
+        },
+        {
+          "path": "app/api/auth/sign-out/route.ts",
+          "type": "registry:file",
+          "target": "~/app/api/auth/sign-out/route.ts"
+        }
+      ]
+    },
+    {
+      "name": "app-admin-company",
+      "type": "registry:block",
+      "title": "Company admin (owner/admin) pages + APIs",
+      "description": "All files under app/(tenant)/admin/: the layout, members/workspaces/settings pages, and the 5 API routes (update company, create/archive workspace, invite/role-change/remove member). Visible to owner OR admin of the active company.",
+      "files": [
+        {
+          "path": "app/(tenant)/admin/layout.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/admin/layout.tsx"
+        },
+        {
+          "path": "app/(tenant)/admin/members/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/admin/members/page.tsx"
+        },
+        {
+          "path": "app/(tenant)/admin/workspaces/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/admin/workspaces/page.tsx"
+        },
+        {
+          "path": "app/(tenant)/admin/settings/page.tsx",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/admin/settings/page.tsx"
+        },
+        {
+          "path": "app/(tenant)/api/admin/company/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/company/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/admin/workspaces/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/workspaces/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/admin/workspaces/[id]/archive/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/workspaces/[id]/archive/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/admin/members/invite/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/members/invite/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/admin/members/[id]/role/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/members/[id]/role/route.ts"
+        },
+        {
+          "path": "app/(tenant)/api/admin/members/[id]/route.ts",
+          "type": "registry:file",
+          "target": "~/app/(tenant)/api/admin/members/[id]/route.ts"
+        }
+      ]
+    },
+    {
+      "name": "shadcn-ui-init",
+      "type": "registry:block",
+      "title": "shadcn/ui initialization (4 components + Tailwind)",
+      "description": "Initializes shadcn/ui in a project that declared it in components.json but never had the files. Adds Tailwind + PostCSS + globals.css + the cn() utility + 4 essential components: Button, Badge, Card, Table. Extend by running `npx shadcn@latest add <name>` once this is in place.",
+      "files": [
+        {
+          "path": "lib/utils.ts",
+          "type": "registry:file",
+          "target": "~/lib/utils.ts"
+        },
+        {
+          "path": "components/ui/button.tsx",
+          "type": "registry:file",
+          "target": "~/components/ui/button.tsx"
+        },
+        {
+          "path": "components/ui/badge.tsx",
+          "type": "registry:file",
+          "target": "~/components/ui/badge.tsx"
+        },
+        {
+          "path": "components/ui/card.tsx",
+          "type": "registry:file",
+          "target": "~/components/ui/card.tsx"
+        },
+        {
+          "path": "components/ui/table.tsx",
+          "type": "registry:file",
+          "target": "~/components/ui/table.tsx"
+        },
+        {
+          "path": "app/globals.css",
+          "type": "registry:file",
+          "target": "~/app/globals.css"
+        },
+        {
+          "path": "tailwind.config.ts",
+          "type": "registry:file",
+          "target": "~/tailwind.config.ts"
+        },
+        {
+          "path": "postcss.config.mjs",
+          "type": "registry:file",
+          "target": "~/postcss.config.mjs"
+        }
+      ]
     }
   ]
 }
